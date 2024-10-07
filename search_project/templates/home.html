@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<body>
+    {% load static %}
+    {% load widget_tweaks %}
+
+    <div class="container mt-5">
+        <!-- <img src="{% static 'images/filter.svg' %}" alt="filter" class="position-absolute" style="height: 50px; width: 50px; cursor: pointer; right: 0;" onclick=""> -->
+        <h1 class="text-center mb-4">商品検索</h1>
+        {% load humanize %}
+        <div class="bg-light p-4 rounded shadow-sm">
+            <form method="get">
+                <!-- 検索キーワード入力 -->
+                <label for="query">検索キーワード:</label>
+                {% render_field form.query class="form-control" %}
+                <!-- カテゴリの選択 -->
+                <label for="category" class="mt-3">カテゴリ:</label>
+                <select name="category" class="form-control">
+                    <option value="">All</option>
+                    <option value="1">本</option>
+                    <option value="2">電子書籍</option>
+                    <option value="3">電子部品</option>
+                    <!-- 他のカテゴリを追加 -->
+                </select>
+                <!-- 価格範囲の入力 -->
+                <label for="min_price" class="mt-3">最低価格:</label>
+                <input type="number" name="min_price" min="0" class="form-control">
+                <label for="max_price" class="mt-3">最高価格:</label>
+                <input type="number" name="max_price" min="0" class="form-control">
+                <!-- 並び替えの選択 -->
+                <label for="sort" class="mt-3">並び順:</label>
+                <select name="sort" class="form-control">
+                    <option value="name">名前</option>
+                    <option value="price_asc">価格が低い順</option>
+                    <option value="price_desc">価格が高い順</option>
+                </select>
+
+                <button type="submit" class="btn btn-primary mt-2 ml-auto">検索</button>
+            </form>
+        </div>
+        {% for c in paginator %}
+        <ul class="list-group mt-4" id="page-{{forloop.counter}}" style="display: none;">
+            {% for product in c %}
+            <li class="list-group-item">{{ product.name }} - ¥{{ product.price|add:"0"|intcomma }}</li>
+            {% empty %}
+            <li class="list-group-item">No results found</li>
+            {% endfor %}
+        </ul>
+        {% endfor %}
+        <div class="pagination">
+            <span class="step-links">
+                <input type="button" onclick="PreviousPage('1')" value="最初" class="btn btn-secondary"> <!-- 最初のページへのリンク -->
+                <!-- 前のページへのリンク -->
+                <input type="button" onclick="PreviousPage()" value="前へ" class="btn btn-secondary">
+                <span class="current">
+                    ページ <span id="pagenum">{{ page_obj.number }}</span> / {{ page_obj.paginator.num_pages }}
+                </span>
+                <!-- 次のページへのリンク -->
+                <input type="button" onclick="NextPage()" value="次へ" class="btn btn-secondary">
+                <!-- 最後のページへのリンク -->
+                <input type="button" onclick="NextPage('{{ page_obj.paginator.num_pages }}')" value="最後" class="btn btn-secondary">
+            </span>
+        </div>
+        <a href="{% url 'product_list' %}" class="btn btn-primary">管理者サイトへ</a>
+    </div>
+
+    <script>
+        page = 1
+        function NextPage(setpage='def'){
+            document.getElementById(`page-${page}`).style = "display: none;";
+            page = Math.min(parseInt('{{ page_obj.paginator.num_pages }}'), page+1);
+            if (setpage != 'def'){
+                page=parseInt(setpage);
+            }
+            document.getElementById(`page-${page}`).style = "";
+            ShowPageNum(page);
+        }
+        function PreviousPage(setpage='def'){
+            document.getElementById(`page-${page}`).style = "display: none;";
+            page = Math.max(1, page-1);
+            if (setpage != 'def'){
+                page=parseInt(setpage);
+            }
+            document.getElementById(`page-${page}`).style = "";
+            ShowPageNum(page);
+        }
+        function ShowPageNum(setpage){
+            document.getElementById('pagenum').innerHTML = setpage;
+        }
+        document.getElementById(`page-1`).style = "";
+    </script>
+</body>
+
+</html>
