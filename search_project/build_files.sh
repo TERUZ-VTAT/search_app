@@ -1,4 +1,4 @@
 pip3 install pipenv
-pipenv3 sync
+python3.9 -m pipenv sync
 # pip3 install -r requirements.txt
 python3.9 manage.py collectstatic
