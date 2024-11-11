@@ -1,5 +1,5 @@
-python -m pip install pipenv
-python -m pipenv sync
+python3.12 -m pip install pipenv
+python3.12 -m pipenv sync
 # pip3 install -r requirements.txt
-python -m pipenv shell
+python3.12 -m pipenv shell
 python manage.py collectstatic
